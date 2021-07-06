@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>TeamsKev</title>
+	
+	<link rel="stylesheet" href="styleSchedule.css"> 
+	<link rel="stylesheet" href="datepicker.css">
+  <link rel="stylesheet" href="datepicker-theme.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="datepicker.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+	<!-- <script src="mtr-datepicker-timezones.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/81ecc7f502.js" crossorigin="anonymous"></script>
+	<script>
+		const USER_NAME = "<%= user.name %>";
+		// const USER_GIVEN_NAME = "<%= user.given_name %>";
+		// const USER_FAMILY_NAME = "<%= user.family_name %>";
+		// const USER_NICKNAME = "<%= user.nickname %>";
+		// const USER_PICTURE_URL = "<%= user.picture %>";
+		const USER_EMAIL = "<%= user.email %>";
+		// const USER_SUB = "<%= user.sub %>";
+		const socket = io('/');
+		var sessionID;
+	
+		const send = () => {
+			socket.emit('needUUID');
+			socket.on('takeUUID', mID => {
+				sessionID = mID;
+				console.log(sessionID);
+				var str = "";
+				str = str + "INSERT INTO meetings (meetingid, topic, start, email) VALUES ('"+sessionID+"', '";
+				str = str + document.getElementById('topic_input').value + "', '";
+				str = str + document.getElementById("printDate").innerText;
+				str = str + " ";
+				str = str + document.getElementById("printTime").innerText;
+				str = str + ":00";
+				var d = new Date().getTimezoneOffset();
+				if(d>0){
+					str = str+ "-";
+					
+				} else {
+					str = str + "+";
+					d = -1*d;
+					
+				}
+
+				h = Math.floor(d/60);
+				if(h<10){
+					h = "0" + h;
+				}
+				str = str + h+":"+d%60; 
+
+				str = str + "', '"
+				
+
+
+				var emailListStr = document.getElementById('email_input').value;
+				var emailArr = emailListStr.split(',');
+
+				var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+				var valid = true;
+				for(let j = 0;j<emailArr.length;j++){
+					if(emailArr[j].trim().match(mailformat)){
+
+					} else {
+						valid = false;
+					}
+				}
+				if(!valid){
+					alert("Invalid Email(s)");
+				}
+				for( let i = 0;i<emailArr.length && valid; i++){
+					var q = str+emailArr[i].trim()+"');";
+					socket.emit('addToMeetings', q);
+					// console.log(q);
+				}
+				if(valid){
+					var q = str+"<%= user.email %>"+"');";
+					socket.emit('addToMeetings', q);
+					document.getElementById('sendButton').innerHTML = '<span class="material-icons">check_circle</span>';
+					document.getElementById('sendButton').className = 'green main__left__emails__send';
+				}
+			});
+
+			
+    };
+	</script>
+</head>
+<body>
+	<section id = "page">
+		<div class="main">
+			<div class="main__left">
+				<div class="main__left__schedule">
+					<span>Schedule a meeting </span>
+					<input class="main__left__field" id="topic_input" placeholder="Short Title...">
+					<div class="main__left__print_date">
+						<span id="printDate"></span>
+						<span id="printTime"></span>
+						<span id="printStamp"></span>
+					</div>
+					<div class="main__left__time_holder">
+						<div class="main__left__time_holder__labels">
+							<span> Time: </span>
+							<span> Date: </span>
+						</div>
+						<div id="demo">
+							
+						</div>
+					</div>
+					<div class="main__left__emails">
+						<input class="main__left__field" id="email_input" placeholder="Email IDs, comma separated">
+						<div onClick="send()" class="main__left__emails__send" id="sendButton">
+							<span class="material-icons md-dark">send</span>
+						</div>
+					</div>
+					<div onclick="location.href='home';" id="main__left__new_schedule__button">
+						<i class="fas fa-home"></i>
+						<span>Home</span>
+					</div>
+				</div>
+
+			</div>
+			<div class="main__right">
+				<div class="main__right__image_place">
+					<div class="main__right__gradient">
+						<img id="main__right__image" src="sched.svg">
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+ <script>
+
+if ('addEventListener' in document) {
+	document.addEventListener('DOMContentLoaded', function() {
+        dp = new MtrDatepicker({
+            target: "demo",
+            future: true,
+            disableAmPm: true,
+          });
+  	dp.onChange('all', function(vm) {		
+    		vm.timeSelected = dp.getFullTime();
+    		/*	
+    			dp.getFullTime()
+    			dp.toLocaleDateString()
+    		 	alert(dp.format('YYYY-MM-DD HH:mm'));
+    		 	getTimestamp
+    		*/
+    		document.getElementById("printTime").innerText = dp.format('HH:mm');
+    		document.getElementById("printDate").innerText = dp.format('YYYY-MM-DD');    });          
+  }, false);
+}    
+  </script>
+</html>

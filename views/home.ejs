@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>TeamsKev</title>
+	
+	<link rel="stylesheet" href="styleHome.css"> 
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/81ecc7f502.js" crossorigin="anonymous"></script>
+	<script>
+		const USER_NAME = "<%= user.name %>";
+		// const USER_GIVEN_NAME = "<%= user.given_name %>";
+		// const USER_FAMILY_NAME = "<%= user.family_name %>";
+		// const USER_NICKNAME = "<%= user.nickname %>";
+		// const USER_PICTURE_URL = "<%= user.picture %>";
+		const USER_EMAIL = "<%= user.email %>";
+		// const USER_SUB = "<%= user.sub %>";
+		const socket = io('/');
+		d = new Date();
+		console.log(d.getTimezoneOffset());
+		dummy = d.getTimezoneOffset() * (-1) ;
+					
+		const delTask = str => {
+			if(document.getElementById(str)){
+				document.getElementById(str).remove();
+			}
+			socket.emit('delTask', str, USER_EMAIL);
+		}
+	
+		const getID = () => {
+			var roomName = document.getElementById('main__left__meetings__field').value;
+			location.href =roomName;
+			
+		};
+
+		const copyText = str => {
+			const el = document.createElement('textarea');
+			el.value = str;
+			document.body.appendChild(el);
+			el.select();
+			alert("Copied Meeting ID");
+			document.execCommand('copy');
+			document.body.removeChild(el);
+		};
+		
+    	
+	</script>
+</head>
+<body>
+	<section id = "page">
+		<div class="main">
+			<div class="main__left">
+				<div class="main__left__welcome">
+					<span ><b>Welcome </b></span>
+					<span id="main__left__welcome_name"><b><%= user.name %></b></span>
+					
+					<span>,</span>
+					<br/><br/>	
+					<span>Let's get some work done!</span>
+				</div>
+
+
+				<div class="main__left__meetings">
+					<div onclick="location.href='newRoom';" id="main__left__meetings__new_meeting">
+						<i class="fas fa-plus"></i>
+						<span>New Meeting</span>
+					</div>
+					<input id="main__left__meetings__field" placeholder="Enter Meeting Code...">
+					<div onClick="getID()" id="main__left__meetings__next">
+						<i class="fas fa-chevron-circle-right"></i>
+					</div>
+				</div>
+
+				<div class="main__left__schedule">
+					<span> Upcoming Meetings... </span>
+					<div id="main__left__schedule__task_container"> 
+						<% if (schedList.length == 0) { %>
+						<span>No Meetings Scheduled </span>
+						<%}%>
+						<% dummy = (-330) * (-1); %>
+						<% for (var i = 0; i < schedList.length; i++) { %>
+							<div id="<%= schedList[i].meetingid %>" class="main__left__meetings__schedule__task">
+								<% schedList[i].start.setHours( schedList[i].start.getHours() + Math.floor(dummy/60)); %>
+								<% schedList[i].start.setMinutes( schedList[i].start.getMinutes() + dummy%60); %>
+								<div class="main__left__meetings__schedule__task__date">
+									<% if(schedList[i].start.getDay() == 0 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Sun</span>
+									<% }else if(schedList[i].start.getDay() == 1 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Mon</span>
+									<% }else if(schedList[i].start.getDay() == 2 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Tue</span>
+									<% }else if(schedList[i].start.getDay() == 3 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Wed</span>
+									<% }else if(schedList[i].start.getDay() == 4 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Thur</span>
+									<% }else if(schedList[i].start.getDay() == 5 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Fri</span>
+									<% }else if(schedList[i].start.getDay() == 6 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Sat</span>
+									<% } %>
+
+									<span style="padding-right: 4px;">, </span>
+									<span><%= schedList[i].start.getDate() %></span>
+									<span style="padding-right: 4px;"> </span>
+									<% if(schedList[i].start.getMonth() == 0 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Jan</span>
+									<% }else if(schedList[i].start.getMonth() == 1 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Feb</span>
+									<% }else if(schedList[i].start.getMonth() == 2 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Mar</span>
+									<% }else if(schedList[i].start.getMonth() == 3 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Apr</span>
+									<% }else if(schedList[i].start.getMonth() == 4 ) { %>
+									<span class="main__left__meetings__schedule__task__span">May</span>
+									<% }else if(schedList[i].start.getMonth() == 5 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Jun</span>
+									<% }else if(schedList[i].start.getMonth() == 6 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Jul</span>
+									<% }else if(schedList[i].start.getMonth() == 7 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Aug</span>
+									<% }else if(schedList[i].start.getMonth() == 8 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Sep</span>
+									<% }else if(schedList[i].start.getMonth() == 9 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Oct</span>
+									<% }else if(schedList[i].start.getMonth() == 10 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Nov</span>
+									<% }else if(schedList[i].start.getMonth() == 11 ) { %>
+									<span class="main__left__meetings__schedule__task__span">Dec</span>
+									<% } %>
+									<span style="padding-right: 4px;"> </span>
+									<span><%= schedList[i].start.getFullYear() %> </span>
+
+								</div>
+								<div class="main__left__meetings__schedule__task__date">
+									
+										<%if(schedList[i].start.getHours() < 10){%>
+										<span>0</span><%}%>
+										<span class="main__left__meetings__schedule__task__span"><%=schedList[i].start.getHours()%>
+									</span>
+									<span >:</span>
+									
+										<%if(schedList[i].start.getMinutes() < 10){%>
+										<span>0</span><%}%>
+										<span class="main__left__meetings__schedule__task__span"><%= schedList[i].start.getMinutes()%> </span>
+
+
+								</div>
+								<div class="main__left__meetings__schedule__task__date">
+									<span class="main__left__meetings__schedule__task__span">
+										<%= schedList[i].topic %>
+											
+									</span>
+								</div>
+								<div class="main__left__meetings__schedule__task__buttons">
+									<i onClick="delTask('<%= schedList[i].meetingid %>')" class="fas fa-trash"></i>
+									<i onClick="copyText('<%= schedList[i].meetingid %>')" class="fas fa-copy"></i>
+									<div onClick="location.href='<%= schedList[i].meetingid %>';" class="main__left__meetings__schedule__task__join">
+										<span> Join </span>
+									</div>
+								</div>
+							</div>
+						<%}%>
+						
+					</div>
+				</div>
+				<div class="main__left__new_schedule">
+					<div onclick="location.href='schedule';" id="main__left__new_schedule__button">
+						<i class="fas fa-clock"></i>
+						<span>Schedule Meeting</span>
+					</div>
+					
+				</div>
+			</div>
+			<div class="main__right">
+				<div onclick="location.href='logout';" class="main__right__logout">
+					<span> Logout </span>
+				</div>
+				<div class="main__right__image_place">
+					<div class="main__right__gradient">
+						<img id="main__right__image" src="vc.svg">
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		
+	</section>
+	<!-- <script src = "homeScript.js"></script> -->
+</body>
+</html>
