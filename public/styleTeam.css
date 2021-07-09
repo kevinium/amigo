@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,700;1,400&display=swap');
+
+* {
+  padding: 0px;
+  margin: 0px;
+}
+
+body{
+	font-family: 'Roboto', sans-serif;
+	background: #1E1E1E;
+	color: #F2F2F2;
+}
+.main{
+	height: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+#title{
+	font-size: 2em;
+	padding-top: 2em;
+	padding-bottom: 1em;
+}
+.main__field{
+	font-size: 1em;
+	background: rgba(216, 212, 212, 0.1);
+	border: 0px solid #CDCDCD;
+	border-radius: 14px;
+	padding: 10px 20px;
+	width: 30em;
+	height: 2em;
+	color: #FFFFFF;
+	margin-top: 1em;
+}
+#email_input{
+	font-size: 1em;
+	background: rgba(216, 212, 212, 0.1);
+	border: 0px solid #CDCDCD;
+	border-radius: 14px;
+	padding: 10px 20px;
+	width: 37em;
+	height: 7em;
+	color: #FFFFFF;
+	margin-top: 1em;
+	text-align: left;
+	text-wrap: wrap;
+}
+#addPeople{
+	margin-right: 25em;
+	padding-top: 30px;
+}
+.finish{
+	background: #3895EB;
+	font-size: 1.5em;
+	border-radius: 11px;
+	padding: 10px 20px;
+	margin-left: 1em;
+	margin-top: 1em;
+	margin-bottom: 0.1em;
+	cursor: pointer;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+}
+
+.green{
+	background: #00B200;
+	padding: 10px 20px;
+}
+nav {
+	height: 3rem;
+}
+nav img{
+	cursor: pointer;
+	padding-left: 9.5rem;
+	padding-top: 2rem;
+	height: 4.5rem;
+}

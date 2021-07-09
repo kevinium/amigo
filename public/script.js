@@ -284,7 +284,7 @@ socket.on('lowerHand', userId => {
 let text = $('input');
 $('html').keydown((e) =>{
 	if(e.which == 13 && text.val().length !== 0) {
-		socket.emit('message', text.val(), USER_NAME);
+		socket.emit('message', text.val(), USER_NAME, USER_EMAIL);
 		text.val('');
 	}
 });
@@ -392,10 +392,20 @@ const blurToggle = () => {
 	if(isBlur[myID+"_canv"]==true){
 		socket.emit('unBlur');
 		unBlur(myID);
+		const html = `
+			<span class="material-icons md-24">blur_on</span>
+			<span>Blur</span>
+		`
+		document.querySelector('.main__blur_button').innerHTML = html;
 	}
 	else{
 		socket.emit('blur');
 		blur(myID);
+		const html = `
+			<span class="start material-icons md-24">blur_off</span>
+			<span>Un-Blur</span>
+		`
+		document.querySelector('.main__blur_button').innerHTML = html;
 	}
 }
 

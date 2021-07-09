@@ -8,8 +8,8 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 	<link rel="stylesheet" href="styleRoom.css"> 
 	<script src="/socket.io/socket.io.js"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	
-	<!-- <script src="peerjs.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
 	<script src="https://kit.fontawesome.com/81ecc7f502.js" crossorigin="anonymous"></script>
@@ -56,10 +56,10 @@
 					</div>
 					<div onclick="copyRoomId()" class="main__controls__button">
 						<i class="fas fa-user-friends"></i>
-						<span>Room ID</span>
+						<span>Meeting ID</span>
 					</div>
-					<div onclick="blurToggle()" class="main__controls__button">
-						<i class="fas fa-comment-alt"></i>
+					<div onclick="blurToggle()" class="main__controls__button main__blur_button">
+						<span class="material-icons md-24">blur_on</span>
 						<span>Blur</span>
 					</div>
 				</div>

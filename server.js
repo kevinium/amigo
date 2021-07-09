@@ -51,46 +51,117 @@ app.get('/home', requiresAuth(), (req, res) =>{
     if (err) {
         console.log("Error - Failed to select all from meetings");
         console.log(err);
+
     }
     
 	});
+
+
+
+
 	var q = "SELECT * FROM meetings WHERE email= '" + req.oidc.user.email + "' ORDER BY start ASC;";
 	
 	pool.query(q, (err, result) => {
-    if (err) {
-        console.log("Error - Failed to select all from meetings");
-        console.log(err);
-    }
-    else{
-        
-        res.render('home', {
-				user: req.oidc.user,
-
-				schedList: result.rows,
+	    if (err) {
+	        console.log("Error - Failed to select all from meetings");
+	        console.log(err);
+	        res.render('error');
+	    }
+	    else{
+	    	var group_query = "SELECT meetingid, group_name FROM groups WHERE email='" + req.oidc.user.email + "';";
+			pool.query(group_query, (err, g_result) =>{
+				if(err) {
+					console.log("Error - Failed to select groups");
+					console.log(err);
+					res.render('error');
+				}
+				else{
+					res.render('home', {
+						user: req.oidc.user,
+						groups: g_result.rows,
+						schedList: result.rows,
+					});
+				}
 			});
-        
-    }
+	    }
 	});
 	
 });
-app.get('/schedule', requiresAuth(), (req, res) =>{
-	res.render('schedule', {
+app.get('/newTeam', requiresAuth(), (req, res) => {
+	res.render('team', {
 		user: req.oidc.user,
 	});
 });
-app.get('/profile', requiresAuth(), (req, res) => {
-	res.send(JSON.stringify(req.oidc.user));
+app.get('/schedule/:room', requiresAuth(), (req, res) =>{
+	var q = "SELECT email FROM groups WHERE meetingid='" + req.params.room + "';";
+	pool.query(q, (err, result) => {
+		if(err){
+			console.log("Error - Failed to get group emails");
+			console.log(err);
+			res.render('error');
+		}
+		else{
+			res.render('schedule', {
+				user: req.oidc.user,
+				members: result.rows,
+				roomId: req.params.room,
+			});
+		}
+	});
 });
 app.get('/newRoom', requiresAuth(), (req, res) =>{
 	res.redirect(`/${uuidV4()}`);
 
 });
+app.get('/chat/:room', requiresAuth(), (req, res) => {
+	var q = "SELECT email, group_name FROM groups WHERE meetingid='" + req.params.room + "';";
+	pool.query(q, (err, result) => {
+		if(err){
+			console.log("Error - Failed to get group Members");
+			console.log(err);
+			res.render('error');
+		}
+		else{
+			var mq = "SELECT email, name, message, time FROM chats WHERE meetingid='" + req.params.room + "' ORDER BY time ASC;";
+			pool.query(mq, (err, m_result) => {
+				if(err){
+					console.log("Error - Failed to get messages");
+					console.log(err);
+					res.render('error');
+				}
+				else{
+					res.render('chatRoom', {
+						roomId: req.params.room,
+						user: req.oidc.user,
+						userUID: `${uuidV4()}`,
+						members: result.rows,
+						messages: m_result.rows,
+					});
+				}
+			})
+			
+		}
+	})
+	
+});
+
 app.get('/:room', requiresAuth(), (req, res) => {
-  res.render('room', { 
-  	roomId: req.params.room,
-  	user: req.oidc.user, 
-  	userUID: `${uuidV4()}`,
-  });
+	var q = "SELECT * FROM chats WHERE meetingid='" + req.params.room + "';";
+	pool.query(q, (err,result)=>{
+		if(err){
+			console.log("Error- invalid room format");
+			console.log(err);
+			res.render('error');
+		}
+		else{
+			res.render('room', { 
+		  	roomId: req.params.room,
+		  	user: req.oidc.user, 
+		  	userUID: `${uuidV4()}`,
+		  });
+		}
+	})
+  
 });
 
 io.on('connection', socket => {
@@ -120,9 +191,21 @@ io.on('connection', socket => {
 		});
 
 
-		socket.on('message', (msg, USER) =>{
+		socket.on('message', (msg, USER, email) =>{
 			// console.log(JSON.stringify(USER));
 			io.to(roomId).emit('createMessage', msg, USER, userId);
+			var q = "INSERT into chats (email, name, meetingid, message, time) VALUES ('" + 
+			email + "', '" +
+			USER + "', '" +
+			roomId + "', '" +
+			msg + "', now());";
+			pool.query(q, (err, result) => {
+				if(err){
+					console.log(err);
+				}
+			});
+
+
 		});
 		socket.on('raiseHand', () => {
 			socket.broadcast.to(roomId).emit('raiseHand', userId);
@@ -145,8 +228,9 @@ io.on('connection', socket => {
 
 	});
 
-	socket.on('delTask', (str, email) => {
-		var q = "DELETE FROM meetings WHERE email= '" + email + "' AND meetingid= '" + str + "' ;";
+	socket.on('delGroup', (str,	 email) => {
+		
+		var q = "DELETE FROM groups WHERE email= '" + email +  "' AND meetingid= '" + str + "' ;";
 	
 		pool.query(q, (err, result) => {
 		    if (err) {

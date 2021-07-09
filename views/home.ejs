@@ -22,13 +22,16 @@
 		console.log(d.getTimezoneOffset());
 		dummy = d.getTimezoneOffset() * (-1) ;
 					
-		const delTask = str => {
-			if(document.getElementById(str)){
-				document.getElementById(str).remove();
+		
+		const delGroup = str => {
+			if(confirm("Are you sure you want to leave this Team? ")){
+				if(document.getElementById(str+'g')){
+						document.getElementById(str+'g').remove();
+					}
+				socket.emit('delGroup', str, USER_EMAIL)
 			}
-			socket.emit('delTask', str, USER_EMAIL);
 		}
-	
+			
 		const getID = () => {
 			var roomName = document.getElementById('main__left__meetings__field').value;
 			location.href =roomName;
@@ -49,6 +52,9 @@
 	</script>
 </head>
 <body>
+	<nav>
+		<img src="/logoamigo.png">
+	</nav>
 	<section id = "page">
 		<div class="main">
 			<div class="main__left">
@@ -154,8 +160,8 @@
 									</span>
 								</div>
 								<div class="main__left__meetings__schedule__task__buttons">
-									<i onClick="delTask('<%= schedList[i].meetingid %>')" class="fas fa-trash"></i>
 									<i onClick="copyText('<%= schedList[i].meetingid %>')" class="fas fa-copy"></i>
+									<i onClick="location.href='chat/<%= schedList[i].meetingid %>';" class="fas fa-comment-alt"></i>
 									<div onClick="location.href='<%= schedList[i].meetingid %>';" class="main__left__meetings__schedule__task__join">
 										<span> Join </span>
 									</div>
@@ -165,22 +171,41 @@
 						
 					</div>
 				</div>
-				<div class="main__left__new_schedule">
-					<div onclick="location.href='schedule';" id="main__left__new_schedule__button">
-						<i class="fas fa-clock"></i>
-						<span>Schedule Meeting</span>
-					</div>
-					
-				</div>
+				
 			</div>
 			<div class="main__right">
 				<div onclick="location.href='logout';" class="main__right__logout">
 					<span> Logout </span>
 				</div>
-				<div class="main__right__image_place">
-					<div class="main__right__gradient">
-						<img id="main__right__image" src="vc.svg">
+				<div id="main__right__groups">
+					<span id="yourTeams"> Your Teams </span>
+					<div id="main__right__groups__groups_container">
+						<% if (groups.length == 0) { %>
+						<span>So lonely here :( </span>
+						<%}%>
+						<% for (var i = 0; i < groups.length; i++) { %>
+							<div id="<%= groups[i].meetingid %>g" class="main__left__meetings__schedule__task">
+								<span><%= groups[i].group_name %></span>
+								<div class="main__left__meetings__schedule__task__buttons">
+									<i onClick="delGroup('<%= groups[i].meetingid %>')" class="fas fa-trash"></i>
+									<i onClick="copyText('<%= groups[i].meetingid %>')" class="fas fa-copy"></i>
+									<i onClick="location.href='chat/<%= groups[i].meetingid %>';" class="fas fa-comment-alt"></i>
+									<div onClick="location.href='<%= groups[i].meetingid %>';" class="main__left__meetings__schedule__task__join">
+										<span> Join </span>
+									</div>
+								</div>
+							</div>
+						<%}%>
+
 					</div>
+					<div class="main__right__new_group">
+						<div onclick="location.href='/newTeam';" id="main__right__new_group__button">
+							<i class="fas fa-users"></i>
+							<span>New Team</span>
+						</div>
+					
+					</div>	
+					
 				</div>
 				
 			</div>

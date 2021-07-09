@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>TeamsKev</title>
+	
+	<link rel="stylesheet" href="/styleTeam.css"> 
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<script src="datepicker.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<!-- <script src="mtr-datepicker-timezones.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/81ecc7f502.js" crossorigin="anonymous"></script>
+	<script>
+		const USER_NAME = "<%= user.name %>";
+		// const USER_GIVEN_NAME = "<%= user.given_name %>";
+		// const USER_FAMILY_NAME = "<%= user.family_name %>";
+		// const USER_NICKNAME = "<%= user.nickname %>";
+		// const USER_PICTURE_URL = "<%= user.picture %>";
+		const USER_EMAIL = "<%= user.email %>";
+		// const USER_SUB = "<%= user.sub %>";
+		const socket = io('/');
+		var sessionID;
+		var ok = true;
+		const send = () => {
+			if(ok){
+				socket.emit('needUUID');
+				socket.on('takeUUID', mID => {
+					sessionID = mID;
+					console.log(sessionID);
+					var str = "";
+					str = str + "INSERT INTO groups (meetingid, group_name, email) VALUES ('"+sessionID+"', '";
+					str = str + document.getElementById('topic_input').value + "', '";
+
+
+					var emailListStr = document.getElementById('email_input').value;
+					var emailArr = emailListStr.split(',');
+
+					var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+					var valid = true;
+					for(let j = 0;j<emailArr.length;j++){
+						if(emailArr[j].trim().match(mailformat)){
+
+						} else {
+							valid = false;
+						}
+					}
+					if(!valid){
+						alert("Invalid Email(s)");
+					}
+					for( let i = 0;i<emailArr.length && valid; i++){
+						var q = str+emailArr[i].trim()+"');";
+						socket.emit('addToMeetings', q);
+						// console.log(q);
+					}
+					if(valid){
+						var q = str+"<%= user.email %>"+"');";
+						socket.emit('addToMeetings', q);
+						document.getElementById('sendButton').innerHTML = '<span class="material-icons">check_circle</span>';
+						document.getElementById('sendButton').className = 'green finish';
+						ok = false
+					}
+				});
+			}
+
+			
+    };
+	</script>
+</head>
+<body>
+	<nav>
+		<img onclick="location.href='/home';" src="/logoamigo.png">
+	</nav>
+	<section id = "page">
+		<div class="main">
+			<img height="250px" src="/vc.svg">
+			<span id="title">Create a new team</span>
+			<input class="main__field" id="topic_input" placeholder="Short Title...">
+			<span id="addPeople">Add People</span>
+			<div>
+				<textarea id="email_input" placeholder="Email IDs, comma separated"></textarea>
+			</div>
+			<div onClick="send()" class="finish" id="sendButton">
+				<span>Finish</span>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
