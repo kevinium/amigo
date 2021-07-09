@@ -128,13 +128,14 @@ canvas {
 	color: #66FCF1;
 	padding: 15px;
 	list-style: none;
+
 }
 .message_sent{
 	float: right;
 	text-align: right;
 	background: rgba(69, 162, 158, 0.1);
 	height: auto;
-	max-width: 250px;
+	width: 250px;
 	word-wrap: break-word;
 	border-radius: 5px;
 	margin: 1em 1em;
@@ -146,7 +147,7 @@ canvas {
 	text-align: left;
 	background: rgba(197, 198, 199, 0.1);
 	height: auto;
-	max-width: 250px;
+	width: 250px;
 	word-wrap: break-word;
 	border-radius: 5px;
 	margin: 1em 1em;

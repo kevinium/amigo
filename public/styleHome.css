@@ -11,7 +11,7 @@ body{
 	color: #F2F2F2;
 }
 .main{
-	height: auto;
+	height: 100vh;
 	display: flex;
 }
 .main__left{
