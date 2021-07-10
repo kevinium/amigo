@@ -14,18 +14,37 @@
 	<script src="https://kit.fontawesome.com/81ecc7f502.js" crossorigin="anonymous"></script>
 	<script>
 		const USER_NAME = "<%= user.name %>";
-		// const USER_GIVEN_NAME = "<%= user.given_name %>";
-		// const USER_FAMILY_NAME = "<%= user.family_name %>";
-		// const USER_NICKNAME = "<%= user.nickname %>";
-		// const USER_PICTURE_URL = "<%= user.picture %>";
+		
 		const USER_EMAIL = "<%= user.email %>";
-		// const USER_SUB = "<%= user.sub %>";
 		const socket = io('/');
 		var sessionID;
 		var ok = true;
+		/*
+		function
+			reads email addresses from the input field, validates the format and sends a query to the server to add to the group
+			for all specified email addresses corresponding to the meeting ID generated.
+		parameters
+			none
+		returns
+			null
+		*/
 		const send = () => {
 			if(ok){
+				/*
+				socket trigger
+				function
+					notify the server requestion a uuid for the room / meeting
+				metadata
+					none
+				*/
 				socket.emit('needUUID');
+				/*
+				socket callback
+				trigger
+					takeUUID
+				parameters
+					mID - newly received meetingID
+				*/
 				socket.on('takeUUID', mID => {
 					sessionID = mID;
 					console.log(sessionID);
@@ -74,7 +93,7 @@
 	</nav>
 	<section id = "page">
 		<div class="main">
-			<img height="250px" src="/vc.svg">
+			<img height="250px" src="/Saly-10.png">
 			<span id="title">Create a new team</span>
 			<input class="main__field" id="topic_input" placeholder="Short Title...">
 			<span id="addPeople">Add People</span>

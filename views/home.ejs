@@ -11,32 +11,59 @@
 	<script src="https://kit.fontawesome.com/81ecc7f502.js" crossorigin="anonymous"></script>
 	<script>
 		const USER_NAME = "<%= user.name %>";
-		// const USER_GIVEN_NAME = "<%= user.given_name %>";
-		// const USER_FAMILY_NAME = "<%= user.family_name %>";
-		// const USER_NICKNAME = "<%= user.nickname %>";
-		// const USER_PICTURE_URL = "<%= user.picture %>";
+		
 		const USER_EMAIL = "<%= user.email %>";
-		// const USER_SUB = "<%= user.sub %>";
+		
 		const socket = io('/');
 		d = new Date();
 		console.log(d.getTimezoneOffset());
 		dummy = d.getTimezoneOffset() * (-1) ;
 					
-		
+		/*
+		function
+			deletes user name from the group / removes the user from the group
+		parameters
+			str - meeting id of the group
+		returns
+			null
+		*/
 		const delGroup = str => {
 			if(confirm("Are you sure you want to leave this Team? ")){
 				if(document.getElementById(str+'g')){
 						document.getElementById(str+'g').remove();
-					}
+				}
+				/*
+				socket trigger
+				function
+					notify server to remove user from group
+				metadata
+					str - meeting id of the group
+					USER_EMAIL - email id of the user to be removed
+				*/
 				socket.emit('delGroup', str, USER_EMAIL)
 			}
 		}
-			
+		/*
+		function
+			takes to the meeting specified by the main__left__meetings__field value
+		parameters
+			none
+		returns	
+			null
+		*/
 		const getID = () => {
 			var roomName = document.getElementById('main__left__meetings__field').value;
 			location.href =roomName;
 			
 		};
+		/*
+		function
+			copies the str (meeting id to the clip board)
+		parameters
+			none
+		returns
+			null
+		*/
 
 		const copyText = str => {
 			const el = document.createElement('textarea');

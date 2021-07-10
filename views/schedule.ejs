@@ -16,15 +16,20 @@
 	<script src="https://kit.fontawesome.com/81ecc7f502.js" crossorigin="anonymous"></script>
 	<script>
 		const USER_NAME = "<%= user.name %>";
-		// const USER_GIVEN_NAME = "<%= user.given_name %>";
-		// const USER_FAMILY_NAME = "<%= user.family_name %>";
-		// const USER_NICKNAME = "<%= user.nickname %>";
-		// const USER_PICTURE_URL = "<%= user.picture %>";
+		
 		const USER_EMAIL = "<%= user.email %>";
-		// const USER_SUB = "<%= user.sub %>";
+		
 		const socket = io('/');
 		var sessionID;
-	
+		/*
+		function
+			reads email addresses from the input field, validates the format and sends a query to the server to add meetings
+			for all specified email addresses corresponding to the meeting ID provided.
+		parameters
+			none
+		returns
+			null
+		*/
 		const send = () => {
 			
 		
@@ -98,7 +103,7 @@
 				<div class="main__left__schedule">
 					<span>Schedule a meeting </span>
 					<input class="main__left__field" id="topic_input" placeholder="Short Title...">
-					<div class="main__left__print_date">
+					<div hidden = 'true' class="main__left__print_date">
 						<span id="printDate"></span>
 						<span id="printTime"></span>
 						<span id="printStamp"></span>
@@ -134,7 +139,7 @@
 			<div class="main__right">
 				<div class="main__right__image_place">
 					<div class="main__right__gradient">
-						<img id="main__right__image" src="/sched.svg">
+						<img id="main__right__image" src="/Saly-31.png">
 					</div>
 				</div>
 			</div>

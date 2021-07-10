@@ -1,9 +1,9 @@
 
-//frontend
+//global variables
 var otherPeers = {}
 var isBlur = {}
 const iceServers = {
-  iceServers: [ //maybe quotes aren't needed
+  iceServers: [ 
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
@@ -15,29 +15,59 @@ const iceServers = {
 		}
   ],
 }
-
-
-
 const socket = io('/');
 const videoGrid = document.getElementById('video-grid');
 var myVideoStream;
 const myVideo = document.createElement('video');
 myVideo.muted = true;
 var myID = USER_UID;
-
+/*
+socket trigger
+function
+	notifies the server that a node requets to join a room
+metadata
+	myID - id of the user that requests to join
+	USER_NAME - name of the user that requests to join
+	ROOM_ID - room/meeting id that the user requests to join
+*/
 socket.emit('join-room', myID, USER_NAME, ROOM_ID);
 
+/*
+socket callback
+trigger
+	welcome
+function
+	calls to set local stream
+	emits 'start_call'
+parameters
+	none
 
+*/
 socket.on('welcome', async () => {
 	// console.log("I, ", myID, " am welcomed");
 	await setLocalStream();
+	/*
+	socket trigger
+		function
+			notifies the server to initiate a connection/call with others in the room/meeting
+		metadata
+			none
+	*/
 	socket.emit('start_call');//useful when others are in call;
 });
-
+/*
+socket callback
+trigger
+	start_call
+function
+	initiates a call with a new user
+parameters
+	userId - user id of the new user to connect to
+	userName - user name of the new user to connect to
+*/
 socket.on('start_call', async(userId, userName) => {
 	otherPeers[userId] = new RTCPeerConnection(iceServers);
-	//addLocal tracks
-	myVideoStream.getTracks().forEach((track) => {
+	myVideoStream.getTracks().forEach((track) => {//add tracks
 		otherPeers[userId].addTrack(track, myVideoStream);
 	})
 
@@ -72,10 +102,17 @@ socket.on('start_call', async(userId, userName) => {
 		
 		videoGrid.appendChild(vidCont);
 
-		// console.log("start_call", userId)
 	}
 	otherPeers[userId].onicecandidate = function(event) {//send ice candidate
 		if(event.candidate) {
+			/*
+			socket trigger
+			function
+				notify server to initiate webrtc ice candidate transfer
+			metadata
+				userId - user id of the user to transfer to
+				anonymous event - parameters for ice candidate
+			*/
 			socket.emit('webrtc_ice_candidate', userId, {
 				ROOM_ID,
 				label: event.candidate.sdpMLineIndex,
@@ -85,7 +122,17 @@ socket.on('start_call', async(userId, userName) => {
 	}
 	await createOffer(otherPeers[userId], userId);
 })
-
+/*
+socket callback
+trigger
+	webrtc_ice_candidate
+function
+	to create a new ice candidate
+parameters
+	dest - user id of the receiver (useful only if dest == myID)
+	sender - user id of the user who sends parameters
+	event - paramets for RTCIceCandidate
+*/ 
 socket.on('webrtc_ice_candidate', (dest, sender, event) => {
 	if(dest==myID){
 		var candidate = new RTCIceCandidate({
@@ -95,7 +142,19 @@ socket.on('webrtc_ice_candidate', (dest, sender, event) => {
 		otherPeers[sender].addIceCandidate(candidate);
 	}
 });
+/*
+socket call back
+trigger
+	webrtc_offer
+function
+	create a webrtc connection
+parameters
+	dest - user id of the receiver (useful only if dest == myID)
+	sender - user id of the user who sends offer
+	senderName - name of the user who sends the offer
+	event - webrtc offer parameters
 
+*/
 socket.on('webrtc_offer', async (dest, sender, senderName, event) => {
 	if(dest==myID){
 		otherPeers[sender] = new RTCPeerConnection(iceServers);
@@ -135,6 +194,14 @@ socket.on('webrtc_offer', async (dest, sender, senderName, event) => {
 
 		otherPeers[sender].onicecandidate = function(event) {//send ice candidate
 			if(event.candidate) {
+				/*
+				socket trigger
+				function
+					notify server to initiate webrtc ice candidate transfer
+				metadata
+					userId - user id of the user to transfer to
+					anonymous event - parameters for ice candidate
+				*/
 				socket.emit('webrtc_ice_candidate', sender, {
 					ROOM_ID,
 					label: event.candidate.sdpMLineIndex,
@@ -147,13 +214,31 @@ socket.on('webrtc_offer', async (dest, sender, senderName, event) => {
 		await createAnswer(otherPeers[sender], sender);
 	}
 })
-
+/*
+socket callback
+trigger
+	webrtc_answer
+function
+	acknowledge and add the webrtc connection
+parameters
+	dest - user id of the receiver (useful only if dest == myID)
+	sender - user id of the user who sends offer
+	senderName - userName of the user who sends the offer
+	event - paramenters for RTCSessionDescription
+*/
 socket.on('webrtc_answer', (dest, sender, senderName, event) => {
 	if(dest==myID){
 		otherPeers[sender].setRemoteDescription(new RTCSessionDescription(event));
 	}
 });
-
+/*
+function
+	sets local stream and creates canvas for blur effect
+parameters
+	none
+returns
+	null
+*/
 async function setLocalStream() {
 	let stream;
 	try{
@@ -189,7 +274,15 @@ async function setLocalStream() {
 	videoGrid.appendChild(vidCont);
 
 }
-
+/*
+function
+	create a webrtc offer
+parameters
+	rtcpc - RTC peer connection object
+	userId - user id of the user to offer the webrtc offer to
+returns
+	null
+*/
 async function createOffer(rtcpc, userId){
 	let sessionDescription
 	try {
@@ -206,7 +299,15 @@ async function createOffer(rtcpc, userId){
 	})
 }
 
-
+/*
+function
+	creates answer to a webrtc offer recieved
+parameters
+	rtcpc - RTC peer connection object
+	userId - user id of the user to offer the webrtc offer to
+returns
+	null
+*/
 async function createAnswer(rtcpc, userId) {
 	let sessionDescription
 	try {
@@ -215,7 +316,14 @@ async function createAnswer(rtcpc, userId) {
 	} catch(error){
 		console.error(error);
 	}
-
+	/*
+	socket trigger
+	function
+		notify the server to send a webrtc_answer
+	metadata
+		userId - user id of the user to send the answer to
+		anonymous event - parameters of the answer
+	*/
 	socket.emit('webrtc_answer', userId, {
 		type: 'webrtc_answer',
 		sdp: sessionDescription,
@@ -225,7 +333,15 @@ async function createAnswer(rtcpc, userId) {
 
 
 var isHandRaised = false;
-
+/*
+function
+	to remove the stream of disconnected users
+parameters
+	event - RTC object of the disconnected user
+	userId - user id of the disconnected user
+returns
+	null
+*/
 function checkPeerDisconnect(event, userId) {
   var state = otherPeers[userId].pc.iceConnectionState;
   // console.log(`connection with peer ${userId} ${state}`);
@@ -234,7 +350,14 @@ function checkPeerDisconnect(event, userId) {
     videoGrid.removeChild(document.getElementById(userId));
   }
 }
-
+/*
+function
+	to make label of the user name to add below their stream
+parameters
+	label - username to be added
+returns
+	div element containing the text specified as lable
+*/
 
 function makeLabel(label) {
   var vidLabel = document.createElement('div');
@@ -242,12 +365,26 @@ function makeLabel(label) {
   vidLabel.setAttribute('class', 'videoLabel');
   return vidLabel;
 }
-
+/*
+function
+	prints the error - used for debugging
+parameters
+	error - error that caused a disrupt
+returns
+	null
+*/
 function errorHandle(error) {
   console.log(error);
 }
-
-
+/*
+function
+	add a video stream to the video element
+parameters
+	video - video element where the sream needs to be added
+	stream - stream that needs to be sent to the video element
+returns 
+	null
+*/
 const addVideoStream = (video, stream) => {
 
 	
@@ -255,16 +392,29 @@ const addVideoStream = (video, stream) => {
 	video.addEventListener('loadedmetadata', () => {
 		video.play();
 	});
-	// videoGrid.append(video);
 }
+/*
+socket callback
+trigger
+	user-disconnected
+function
+	removes the video element and label of the disconnected user
+*/
 socket.on('user-disconnected', userId => {
-	// console.log(inMeeting[userId]);
+	
 	if(document.getElementById(userId)){
 		document.getElementById(userId).remove();
 	}
-	// if(inMeeting[userId]) inMeeting[userId].close();
+	
 	
 });
+/*
+socket callback
+trigger
+	raiseHand
+function
+	highlights the video of user with raisedHand
+*/
 socket.on('raiseHand', userId => {
 	
 	if(document.getElementById(userId+"_vid")){
@@ -273,6 +423,13 @@ socket.on('raiseHand', userId => {
 	}
 	
 });
+/*
+socket callback
+trigger
+	lowerHand
+function
+	un-highlights the video of user with raisedHand
+*/
 socket.on('lowerHand', userId => {
 	
 	if(document.getElementById(userId+"_vid")){
@@ -281,6 +438,9 @@ socket.on('lowerHand', userId => {
 	}
 	
 });
+/*
+triggered on pressing ENTER - to send a message to the chat
+*/
 let text = $('input');
 $('html').keydown((e) =>{
 	if(e.which == 13 && text.val().length !== 0) {
@@ -288,6 +448,20 @@ $('html').keydown((e) =>{
 		text.val('');
 	}
 });
+/*
+Socket callback
+trigger
+	createMessage
+function
+	appends a message to the screen
+parameters 
+	msg - message recieved
+	user - username of the sender
+	userid - uuid of the sender
+returns 
+	null
+*/
+
 socket.on("createMessage", (msg, user, userId) =>{
 	if (userId==myID) {
 		$('.messages').append(`<li class="message_sent"><b>${user}</b><br/>${msg}</li>`);
@@ -297,11 +471,26 @@ socket.on("createMessage", (msg, user, userId) =>{
 	}
 	scrollToBottom();
 });
+/*
+Scrolls to the bottom of the chat window
+parameters
+	none
+returns
+	none
+*/
 const scrollToBottom = () =>{
 	
 	let d = $('.main__chat_window');
 	d.scrollTop(d.prop("scrollHeight"));
 } 
+/*
+function
+	toggles mic on/off
+parameters
+	none
+returns
+	null
+*/
 const micToggle = () => {
 	const enabled = myVideoStream.getAudioTracks()[0].enabled;
 	if(enabled){
@@ -312,6 +501,14 @@ const micToggle = () => {
 		setMuteButton();
 	}
 }
+/*
+function
+	sets the unmute button (GUI element)
+parameters
+	none
+returns
+	null
+*/
 const setUnmuteButton = () => {
 	const html = `
 		<i class="unmute fas fa-microphone-slash"></i>
@@ -319,6 +516,14 @@ const setUnmuteButton = () => {
 	`
 	document.querySelector('.main__mute_button').innerHTML = html;
 }
+/*
+function
+	sets the mute button (GUI element)
+parameters
+	none
+returns
+	null
+*/
 const setMuteButton = () => {
 	const html = `
 		<i class="fas fa-microphone"></i>
@@ -326,7 +531,14 @@ const setMuteButton = () => {
 	`
 	document.querySelector('.main__mute_button').innerHTML = html;
 }
-
+/*
+function
+	toggles video on/off
+parameters
+	none
+returns
+	null
+*/
 const vidToggle = () => {
 	const enabled = myVideoStream.getVideoTracks()[0].enabled;
 	if(enabled){
@@ -337,6 +549,15 @@ const vidToggle = () => {
 		setStopButton();
 	}
 }
+/*
+function
+	sets the play button (GUI element)
+parameters
+	none
+returns
+	null
+*/
+
 const setPlayButton = () => {
 	const html = `
 		<i class="start fas fa-video-slash"></i>
@@ -344,6 +565,15 @@ const setPlayButton = () => {
 	`
 	document.querySelector('.main__video_button').innerHTML = html;
 }
+/*
+function
+	sets the stop button (GUI element)
+parameters
+	none
+returns
+	null
+*/
+
 const setStopButton = () => {
 	const html = `
 		<i class="fas fa-video"></i>
@@ -351,6 +581,14 @@ const setStopButton = () => {
 	`
 	document.querySelector('.main__video_button').innerHTML = html;
 }
+/*
+function
+	raises / lowers the hand of the user on theri own screen and also toggles the gui element
+parameters
+	none
+returns
+	null
+*/
 const raiseHand = () => {
 	if(isHandRaised){
 		myVideo.className = "unHighlighted";
@@ -376,6 +614,14 @@ const raiseHand = () => {
 		
 	}
 }
+/*
+function
+	copies room id to the clipboard
+parameters
+	none
+returns
+	null
+*/
 const copyRoomId = () => {
 	const roomTemp = document.createElement('textarea');
 	roomTemp.value = ROOM_ID;
@@ -387,7 +633,14 @@ const copyRoomId = () => {
 	alert("Meeting ID copied "+roomTemp.value);
 
 }
-
+/*
+function
+	calls blur/unBlur
+parameters
+	none
+returns
+	null
+*/
 const blurToggle = () => {
 	if(isBlur[myID+"_canv"]==true){
 		socket.emit('unBlur');
@@ -409,6 +662,10 @@ const blurToggle = () => {
 	}
 }
 
+/*
+socket callbacks
+	calls blur / unBlur
+*/
 socket.on('blur', userId => {
 	blur(userId);
 })
@@ -416,6 +673,14 @@ socket.on('unBlur', userId => {
 	unBlur(userId);
 })
 
+/*
+function
+	blurs the video of the user
+parameters
+	userId - user id of the user to blur
+returns
+	null
+*/
 const blur = (userId) => {
 	var vid = document.getElementById(userId+"_vid");
 	vid.hidden = true;
@@ -425,7 +690,14 @@ const blur = (userId) => {
 	isBlur[canv.id] = true;
 	loadBodyPix(vid, canv);
 }
-
+/*
+function
+	un-blurs the video of the user
+parameters
+	userId - user id of the user to un-blur
+returns
+	null
+*/
 const unBlur = (userId) => {
 	var vid = document.getElementById(userId+"_vid");
 	vid.hidden = false;
@@ -434,7 +706,15 @@ const unBlur = (userId) => {
 	isBlur[canv.id] = false;
 }
 
-
+/*
+function
+	loads the bodyPix object with parameters
+parameters
+	vidElement - video element to blur
+	canvasElement - canvasElement to draw the blur stream on
+returns
+	null
+*/
 const loadBodyPix = (vidElement, canvasElement) => {
 	options = {
 		multiplier: 0.75,
@@ -445,8 +725,16 @@ const loadBodyPix = (vidElement, canvasElement) => {
 		.then(net => perform(net, vidElement, canvasElement))
 		.catch(err => console.log(err))
 }
-
-
+/*
+helper function
+	helper to bodyPix , blurs the video based on body segmenttion using AI
+parameters
+	net - net element used for body segmentation
+	vidElement - video element to blur
+	canvasElement - canvasElement to draw the blur stream on
+returns
+	null
+*/
 async function perform(net, vidElement, canvasElement) {
 	while(isBlur[canvasElement.id]==true){
 		const segmentation = await net.segmentPerson(vidElement);
