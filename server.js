@@ -270,7 +270,7 @@ io.on('connection', socket => {
 		    if (err) {
 		        console.log("Error - Failed to Delete");
 		        console.log(err);
-		        res.render('error');
+		        // res.render('error');
 		    }
 		});
 
@@ -308,7 +308,7 @@ io.on('connection', socket => {
 		        console.log(err);
 		    }
 		    else{
-		    	res.render('error');
+		    	// res.render('error');
 		    }
 		});
 	});
