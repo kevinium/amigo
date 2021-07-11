@@ -153,7 +153,7 @@ app.get('/:room', requiresAuth(), (req, res) => {
 	pool.query(q, (err,result)=>{
 		if(err){
 			console.log("Error- invalid room format");
-			res.render('error');acha
+			res.render('error');
 			console.log(err);
 			
 		}
