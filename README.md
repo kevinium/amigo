@@ -41,10 +41,10 @@
     <li>
       <a href="#standout-features">Standout Features</a>
       <ul>
-        <li><a href="#blur-background">Blur Background</a></li>
-        <li><a href="#security-">Security - End-to-End Encryption for Video Call</a></li>
+        <li><a href="#blur-your-background">Blur Background using AI-ML</a></li>
+        <li><a href="#security">Security - End-to-End Encryption for Video Call</a></li>
         <li><a href="#trust-worthy-login">Trust worthy login</a></li>
-        <li><a href="#Schedule Meetings">Blur Background _AI - ML_</a></li>
+        <li><a href="#schedule-meetings">Schedule Meetings</a></li>
       </ul>
     </li>
     <li><a href="#development-methods">Usage</a></li>
