@@ -1,4 +1,5 @@
 
+
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
@@ -85,12 +86,29 @@ Why Amigo:
 
 ### Blur your background
 * uses _**Artificial Intelligence - Machine Learning**_
+<img width="428" alt="blur" src="https://user-images.githubusercontent.com/56315179/125472974-6e47d982-2c2f-47fc-a0bd-0d66fdec23c7.png">
+<img width="416" alt="noBlur" src="https://user-images.githubusercontent.com/56315179/125473580-dd683a04-96e3-46f5-b184-01c4458f463b.png">
+
 ### Security
 * Video Communications are _**end-to-end Encrypted**_
+
+<img width="631" alt="e2ee" src="https://user-images.githubusercontent.com/56315179/125473329-71b4b819-b0d5-48ed-b49d-d20ee958ad87.png">
+
+<!-- https://www.google.com/url?sa=i&url=https%3A%2F%2Fcodesealer.com%2Fdoing-end-to-end-encryption-the-right-way%2F&psig=AOvVaw2cH9tBHXlnOVGEsQdGCNz9&ust=1626274087680000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCNixr6Gl4PECFQAAAAAdAAAAABAD -->
+
 ### Trust-worthy login
 * Login is via _**Google**,_ Amigo server stores _**nothing**_ apart from your _**name and email id**_
+
+<img width="315" alt="trust" src="https://user-images.githubusercontent.com/56315179/125474112-b7e6fd35-d220-4d63-8fb9-81d4eaac856e.png">
+
+<!-- https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.obscorp.com%2Fblog%2Fthe-unofficial-guide-to-comprehensive-google-account-security&psig=AOvVaw131WKfa6s44ARYC-aQkiRF&ust=1626274282921000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCICch_6l4PECFQAAAAAdAAAAABAD -->
+
 ### Schedule Meetings
 * You can schedule a meeting with your Teams for a future date using an _**interactive date and time picker**_
+
+<img width="714" alt="schedule" src="https://user-images.githubusercontent.com/56315179/125474302-6c67d547-2800-49cf-a297-1c9fa3ce02e9.png">
+
+
 <!-- DEVELOPMENT METHODS -->
 ## Development Methods
 
