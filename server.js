@@ -20,7 +20,7 @@ app.use(
 	})
 );
 const pool = new Pool({
- connectionString: "postgres://vhrmfyhfwcxfqc:d3b674abb254602eccfda2311d661bc43c5f752b2db26022aff071ac43a6fa82@ec2-52-5-247-46.compute-1.amazonaws.com:5432/daqr3jm2ndi8vi",
+ connectionString: "##",
  ssl: {
  rejectUnauthorized: false
  }
