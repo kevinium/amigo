@@ -48,7 +48,8 @@
         <li><a href="#schedule-meetings">Schedule Meetings</a></li>
       </ul>
     </li>
-    <li><a href="#development-methods">Usage</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#development-methods">Development Methods</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
@@ -86,8 +87,11 @@ Why Amigo:
 
 ### Blur your background
 * uses _**Artificial Intelligence - Machine Learning**_
+
+<p>
 <img width="428" alt="blur" src="https://user-images.githubusercontent.com/56315179/125472974-6e47d982-2c2f-47fc-a0bd-0d66fdec23c7.png">
 <img width="416" alt="noBlur" src="https://user-images.githubusercontent.com/56315179/125473580-dd683a04-96e3-46f5-b184-01c4458f463b.png">
+</p>
 
 ### Security
 * Video Communications are _**end-to-end Encrypted**_
@@ -108,6 +112,8 @@ Why Amigo:
 
 <img width="714" alt="schedule" src="https://user-images.githubusercontent.com/56315179/125474302-6c67d547-2800-49cf-a297-1c9fa3ce02e9.png">
 
+## Usage
+* It is recommended that this app be used with a Chrome browser running on a Desktop Computer
 
 <!-- DEVELOPMENT METHODS -->
 ## Development Methods
